@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+#
+# Summary: Set GOENV_VERSION for the lifetime of a shell.
+#
+# Usage: goenv shell <version>
+#        goenv shell --unset|-u
+
+# Bomb out if we hit an error, ever
+set -e
+
+# Verbose output in debug mode
+[ -n "$GOENV_DEBUG" ] && {
+  set -x
+}
+
+version_installed() {
+  local v="$1"
+  [ -d "${GOENV_ROOT}/versions/${v}" ]
+}
+
+# Set the version
+version="$1"
+
+case "$version" in
+  "")
+    if [ -z "$GOENV_VERSION" ]; then
+      echo "goenv: no shell version configured" >&2
+      exit 1
+    else
+      echo "echo \"$GOENV_VERSION\""
+    fi
+    ;;
+
+  "-u" | "--unset")
+    echo "unset GOENV_VERSION"
+    ;;
+
+  *)
+    export GOENV_VERSION="$version"
+
+    if version_installed "$version"; then
+      echo "export GOENV_VERSION=\"${version}\""
+    else
+      echo "goenv: version \`${version}' is not installed" >&2
+      exit 1
+    fi
+    ;;
+esac

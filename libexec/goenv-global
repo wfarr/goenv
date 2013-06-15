@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+#
+# Summary: Persist the preferred Go default version.
+#
+# Usage: goenv global <version>
+#        goenv global --unset|-u
+
+# Bomb out if we hit an error, ever
+set -e
+
+# Verbose output in debug mode
+[ -n "$GOENV_DEBUG" ] && {
+  set -x
+}
+
+# Set the version
+version="$1"
+version_file="${GOENV_ROOT}/version"
+
+case "$version" in
+  "")
+    echo "goenv: a version or --unset is required" >&2
+    exit 1
+    ;;
+
+  "-u" | "--unset")
+    if [ -f "$version_file" ]; then
+      rm "$version_file"
+      echo "Unset $version_file"
+    else
+      echo "goenv: no global version to unset" >&2
+      exit 1
+    fi
+    ;;
+
+  *)
+    echo "$version" > "$version_file"
+    echo "Set $version_file to use $version"
+    ;;
+esac

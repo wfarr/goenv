@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+# goenv version
+version="0.0.0"
+
+# Bomb out if we hit an error, ever
+set -e
+
+# Verbose output in debug mode
+[ -n "$GOENV_DEBUG" ] && {
+  set -x
+}
+
+# Helper functions
+resolve_link() {
+  $(type -p greadlink readlink | head -1) "$1"
+}
+
+abs_dirname() {
+  local cwd="$(pwd)"
+  local path="$1"
+
+  while [ -n "$path" ]; do
+    cd "${path%/*}"
+    local name="${path##*/}"
+    path="$(resolve_link "$name" || true)"
+  done
+
+  pwd
+  cd "$cwd"
+}
+
+# Set up GOENV_ROOT, location where everything lives
+
+if [ -z "${GOENV_ROOT}" ]; then
+  GOENV_ROOT="${HOME}/.goenv"
+else
+  GOENV_ROOT="${GOENV_ROOT%/}"
+fi
+
+export GOENV_ROOT
+
+# Jump into the GOENV_DIR
+if [ -z "${GOENV_DIR}" ]; then
+  GOENV_DIR="$(pwd)"
+else
+  cd "${GOENV_DIR}" 2>/dev/null || {
+    echo "goenv: cannot change working directory to \`$GOENV_DIR'"
+    exit 1
+  } >&2
+
+  GOENV_DIR="$(pwd)"
+
+  cd "$OLDPWD"
+fi
+
+export GOENV_DIR
+
+# Pop the first argument, our subcommand
+command="$1"
+
+# Make sure we can find out utilities on PATH
+bin_path="$(abs_dirname "$0")"
+export PATH="${bin_path}":$PATH
+
+case "$command" in
+  "" | "-h" | "--help" )
+    exec goenv-help
+    ;;
+
+  "-v" | "--version" )
+    echo "goenv ${version}"
+    exit
+    ;;
+
+  *)
+    command_path="${bin_path}/goenv-${command}"
+
+    [ -x "${command_path}" ] || {
+      echo "goenv: no such command \`$command'" >&2
+      exit 1
+    }
+
+    shift 1
+    exec "goenv-$command" "$@"
+    ;;
+esac

@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# Summary: Install a version of Go.
+#
+# Usage: goenv install <version>
+#
+# Versions should be in the form of N.N.N
+
+# Bomb out if we hit an error, ever
+set -e
+
+# Verbose output in debug mode
+[ -n "$GOENV_DEBUG" ] && {
+  set -x
+}
+
+# Pull the desired version out of ARGV
+version="$1"
+version_dir="$GOENV_ROOT/versions/$version"
+
+# stash the pwd
+OLDPWD=$(pwd)
+
+# Make the version dir and get in there
+mkdir -p "$version_dir"
+cd "$version_dir"
+
+platform="$(uname -s | tr '[:upper:]' '[:lower:]')"
+
+if [ "$(uname -m)" = "x86_64" ]; then
+  arch="amd64"
+else
+  arch="386"
+fi
+
+# URL to download from
+download="https://go.googlecode.com/files/go${version}.${platform}-${arch}.tar.gz"
+
+# Can't get too clever here
+set +e
+
+# Download binary tarball and install
+# Linux downloads are formatted differently from OS X
+(
+  curl -s -f "$download" > "/tmp/go${version}.${platform}-${arch}.tar.gz" && \
+  tar zxvf "/tmp/go${version}.${platform}-${arch}.tar.gz" --strip-components 1 && \
+  rm "/tmp/go${version}.${platform}-${arch}.tar.gz"
+) || \
+  {
+    cd $OLDPWD
+    rmdir "$version_dir"
+
+    echo "goenv: unable to install Go \`${version}' from binary, download not available"
+    exit 1
+  }
+
+echo "Installed ${version}"
+cd $OLDPWD
+
+exec "${GOENV_ROOT}/bin/goenv" rehash

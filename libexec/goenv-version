@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Summary: Show the current Go version.
+
+# Bomb out if we hit an error, ever
+set -e
+
+# Verbose output in debug mode
+[ -n "$GOENV_DEBUG" ] && {
+  set -x
+}
+
+if [ -z "${GOENV_VERSION}" ]; then
+  export GOENV_VERSION_FILE="$(goenv-version-file)"
+  export GOENV_VERSION="$(goenv-version-file-read "$GOENV_VERSION_FILE" || true)"
+fi
+
+version_exists() {
+  local version="$1"
+  [ -n "${version}" ] && \
+    [ -d "${GOENV_ROOT}/versions/${version}" ]
+}
+
+no_versions() {
+  [ -z "$(goenv-versions)" ]
+}
+
+if [ -z "$GOENV_VERSION" ]; then
+  echo "goenv: couldn't find any version specified for use" >&2
+  exit 1
+elif version_exists "$GOENV_VERSION"; then
+  echo "$GOENV_VERSION"
+elif no_versions; then
+  echo "goenv: no versions of Go are currently installed" >&2
+  exit 1
+else
+  echo "goenv: version \`$GOENV_VERSION' is not installed" >&2
+  exit 1
+fi
