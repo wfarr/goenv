@@ -7,14 +7,14 @@ rbenv, but for Go.
 To install the latest stable release:
 
 ```
-git clone -b v0.0.1 https://github.com/wfarr/goenv.git ~/.goenv
+git clone -b v0.0.2 https://github.com/wfarr/goenv.git ~/.goenv
 ```
 
 Then add the following to your shell config at the end:
 
 ```
 export PATH="$HOME/.goenv/bin:$PATH"
-eval "(goenv init -)"
+eval "$(goenv init -)"
 ```
 
 ## Usage
