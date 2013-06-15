@@ -75,5 +75,8 @@ fi
 
 mkdir -p "${GOENV_ROOT}/"{shims,versions}
 
-echo 'export PATH="'${GOENV_ROOT}'/shims:${PATH}"'
+if [[ ":${PATH}:" != *:"${GOENV_ROOT}/shims":* ]]; then
+  echo 'export PATH="'${GOENV_ROOT}'/shims:${PATH}"'
+fi
+
 echo 'goenv rehash 2>/dev/null'
