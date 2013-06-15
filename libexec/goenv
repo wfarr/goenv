@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # goenv version
-version="0.0.1"
+version="0.0.2"
 
 # Bomb out if we hit an error, ever
 set -e
