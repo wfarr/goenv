@@ -25,8 +25,10 @@ if [ -z "$GOENV_VERSION" ]; then
   fi
 fi
 
+GOROOT="$GOENV_ROOT/versions/$GOENV_VERSION"
+
 # if the specified Go version lacks this bin, bail
-if [ ! -x "$GOENV_ROOT/versions/$GOENV_VERSION/bin/$1" ]; then
+if [ ! -x "$GOROOT/bin/$1" ]; then
   echo "goenv: \`$1' does not exist for $GOENV_VERSION" >&2
 
   for version in "$(goenv versions)"; do
@@ -38,11 +40,9 @@ if [ ! -x "$GOENV_ROOT/versions/$GOENV_VERSION/bin/$1" ]; then
   exit 1
 fi
 
-export GOENV_VERSION
+export GOENV_VERSION GOROOT
 
 # Put our bindir onto PATH
-bindir="$GOENV_ROOT/versions/$GOENV_VERSION/bin"
-
-export PATH="$bindir:$PATH"
+export PATH="$GOROOT/bin:$PATH"
 
 exec "$@"
