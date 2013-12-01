@@ -32,8 +32,20 @@ else
   arch="386"
 fi
 
+extra=""
+if [ "$platform" = "darwin" ]; then
+  # Since go version 1.2, osx packages were subdivided into 10.6 and 10.8
+  if [ "$version" = "1.2" -o "$version" \> "1.2" ]; then
+    if [ "$(uname -r)" \> "13" ]; then
+      extra="-osx10.8"
+    else
+      extra="-osx10.6"
+    fi
+  fi
+fi
+
 # URL to download from
-download="https://go.googlecode.com/files/go${version}.${platform}-${arch}.tar.gz"
+download="https://go.googlecode.com/files/go${version}.${platform}-${arch}${extra}.tar.gz"
 
 # Can't get too clever here
 set +e
