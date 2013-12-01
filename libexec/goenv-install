@@ -36,7 +36,7 @@ extra=""
 if [ "$platform" = "darwin" ]; then
   # Since go version 1.2, osx packages were subdivided into 10.6 and 10.8
   if [ "$version" = "1.2" -o "$version" \> "1.2" ]; then
-    if [ "$(uname -r)" \> "13" ]; then
+    if [ "$(uname -r)" \> "12" ]; then
       extra="-osx10.8"
     else
       extra="-osx10.6"
