@@ -13,6 +13,25 @@ set -e
   set -x
 }
 
+# List available versions
+list_versions() {
+  source ./resources/versions
+  echo "Available versions:"
+  local key "${platform}_${arch}_$(echo ${extra} | tr -d '[:punct:]')"
+  for version in `echo ${VERSIONS[$key]}`
+  do
+    echo "  $version"
+  done
+}
+
+# Check for -l | --list flag
+case "$1" in
+  "-l" | "--list" )
+    list_versions;
+    exit 0;;
+  *)
+esac
+
 # Pull the desired version out of ARGV
 version="$1"
 version_dir="$GOENV_ROOT/versions/$version"
