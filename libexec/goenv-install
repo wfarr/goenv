@@ -44,7 +44,7 @@ if [ "$platform" = "darwin" ]; then
 fi
 
 # URL to download from
-download="https://go.googlecode.com/files/go${version}.${platform}-${arch}${extra}.tar.gz"
+download="https://storage.googleapis.com/golang/go${version}.${platform}-${arch}${extra}.tar.gz"
 
 # Can't get too clever here
 set +e
