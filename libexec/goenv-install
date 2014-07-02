@@ -13,6 +13,8 @@ set -e
   set -x
 }
 
+BASE_URI="http://golang.org/dl/"
+
 # Pull the desired version out of ARGV
 version="$1"
 version_dir="$GOENV_ROOT/versions/$version"
@@ -44,7 +46,7 @@ if [ "$platform" = "darwin" ]; then
 fi
 
 # URL to download from
-download="https://go.googlecode.com/files/go${version}.${platform}-${arch}${extra}.tar.gz"
+download="${BASE_URI}go${version}.${platform}-${arch}${extra}.tar.gz"
 
 # Can't get too clever here
 set +e
