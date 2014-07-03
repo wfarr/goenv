@@ -13,6 +13,19 @@ set -e
   set -x
 }
 
+BASE_URI="http://golang.org/dl/"
+
+REGEX='go[0-9](.[0-9])+.(freebsd|linux|windows|darwin)-(amd64|386)(-(osx10\.[0-9]))?.tar.gz'
+
+if [[ "$1" = "-l" || "$1" = "--list" ]]; then
+  (
+  curl -s $BASE_URI | \
+  grep -o -E -e $REGEX | \
+  sed -e 's/go\(.*\)\.\(darwin\|linux\|freebsd\|windows\).*/\1/' | \
+  sort | uniq
+  ) && exit 0;
+fi
+
 # Pull the desired version out of ARGV
 version="$1"
 version_dir="$GOENV_ROOT/versions/$version"
@@ -44,7 +57,7 @@ if [ "$platform" = "darwin" ]; then
 fi
 
 # URL to download from
-download="https://go.googlecode.com/files/go${version}.${platform}-${arch}${extra}.tar.gz"
+download="${BASE_URI}go${version}.${platform}-${arch}${extra}.tar.gz"
 
 # Can't get too clever here
 set +e
