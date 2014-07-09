@@ -8,6 +8,35 @@
 # Bomb out if we hit an error, ever
 set -e
 
+# helper functions
+function download_url_exist() {
+    local url="$1"
+    curl -L --output /dev/null --silent --head --fail "$url"
+}
+
+function download_url() {
+    local version="$1"
+    local platform="$2"
+    local arch="$3"
+    local extra="$4"
+
+    # newer versions are at http://golang.org/dl
+    # older versions are at http://go.googlecode.com/files
+
+    local base_url_new="http://golang.org/dl"
+    local base_url_old="http://go.googlecode.com/files"
+
+    download="${base_url_new}/go${version}.${platform}-${arch}${extra}.tar.gz"
+    if download_url_exist $download ;
+    then
+        echo $download
+        return
+    fi
+
+    download="${base_url_old}/go${version}.${platform}-${arch}${extra}.tar.gz"
+    echo $download
+}
+
 # Verbose output in debug mode
 [ -n "$GOENV_DEBUG" ] && {
   set -x
@@ -44,7 +73,7 @@ if [ "$platform" = "darwin" ]; then
 fi
 
 # URL to download from
-download="https://go.googlecode.com/files/go${version}.${platform}-${arch}${extra}.tar.gz"
+download=$(download_url $version $platform $arch $extra)
 
 # Can't get too clever here
 set +e
@@ -52,7 +81,7 @@ set +e
 # Download binary tarball and install
 # Linux downloads are formatted differently from OS X
 (
-  curl -s -f "$download" > "/tmp/go${version}.${platform}-${arch}.tar.gz" && \
+  curl -L -s -f "$download" > "/tmp/go${version}.${platform}-${arch}.tar.gz" && \
   tar zxvf "/tmp/go${version}.${platform}-${arch}.tar.gz" --strip-components 1 && \
   rm "/tmp/go${version}.${platform}-${arch}.tar.gz"
 ) || \
