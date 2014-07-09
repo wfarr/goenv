@@ -9,15 +9,6 @@
 set -e
 
 # helper functions
-function warn() {
-    printf '\033[0;31m%s\033[0m\n' "$1" >&2
-}
-
-function die() {
-    warn "$1"
-    exit 1
-}
-
 function download_url_exist() {
     local url="$1"
     curl -L --output /dev/null --silent --head --fail "$url"
@@ -32,19 +23,18 @@ function download_url() {
     # newer versions are at http://golang.org/dl
     # older versions are at http://go.googlecode.com/files
 
-    local base_urls=("http://golang.org/dl" "http://go.googlecode.com/files")
-    local download=""
+    local base_url_new="http://golang.org/dl"
+    local base_url_old="http://go.googlecode.com/files"
 
-    for base_url in "${base_urls[@]}"
-    do
-        download="${base_url}/go${version}.${platform}-${arch}${extra}.tar.gz"
-        if download_url_exist $download ;
-        then
-            echo $download
-            return
-        fi
-    done
-    die "[err] Couldn't find download url for golang version '$version'"
+    download="${base_url_new}/go${version}.${platform}-${arch}${extra}.tar.gz"
+    if download_url_exist $download ;
+    then
+        echo $download
+        return
+    fi
+
+    download="${base_url_old}/go${version}.${platform}-${arch}${extra}.tar.gz"
+    echo $download
 }
 
 # Verbose output in debug mode
