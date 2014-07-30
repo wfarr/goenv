@@ -43,16 +43,60 @@ if [ "$platform" = "darwin" ]; then
   fi
 fi
 
-# URL to download from
-download="https://go.googlecode.com/files/go${version}.${platform}-${arch}${extra}.tar.gz"
 
+
+
+function vercomp () {
+    # http://stackoverflow.com/questions/4023830
+    # 0: '='
+    # 1: '>'
+    # 2: '<'
+    if [[ $1 == $2 ]]
+    then
+        echo 0
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+    do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++))
+    do
+        if [[ -z ${ver2[i]} ]]
+        then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]}))
+        then
+            echo 1
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]}))
+        then
+            echo 2
+        fi
+    done
+#    echo 0
+}
+
+
+rtn=$(vercomp ${version} 1.2)
+# URL to download from
+if [ "$rtn" == "1" ]
+then
+    download="http://golang.org/dl/go${version}.${platform}-${arch}${extra}.tar.gz"
+else
+    download="https://go.googlecode.com/files/go${version}.${platform}-${arch}${extra}.tar.gz"
+fi
 # Can't get too clever here
 set +e
 
 # Download binary tarball and install
 # Linux downloads are formatted differently from OS X
 (
-  curl -s -f "$download" > "/tmp/go${version}.${platform}-${arch}.tar.gz" && \
+  curl --progress -L -f "$download" > "/tmp/go${version}.${platform}-${arch}.tar.gz" && \
   tar zxvf "/tmp/go${version}.${platform}-${arch}.tar.gz" --strip-components 1 && \
   rm "/tmp/go${version}.${platform}-${arch}.tar.gz"
 ) || \
@@ -60,7 +104,7 @@ set +e
     cd $OLDPWD
     rmdir "$version_dir"
 
-    echo "goenv: unable to install Go \`${version}' from binary, download not available"
+    echo "goenv: unable to install Go \`${version}' from binary, download not available at ${download}"
     exit 1
   }
 
