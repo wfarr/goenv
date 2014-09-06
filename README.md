@@ -7,7 +7,7 @@ rbenv, but for Go.
 To install the latest stable release:
 
 ```
-git clone -b v0.0.5 https://github.com/wfarr/goenv.git ~/.goenv
+git clone -b 0.0.5 https://github.com/wfarr/goenv.git ~/.goenv
 ```
 
 Then add the following to your shell config at the end:
