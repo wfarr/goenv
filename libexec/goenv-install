@@ -43,53 +43,33 @@ if [ "$platform" = "darwin" ]; then
   fi
 fi
 
-
-
-
+# stackoverflow.com/questions/3511006
+# 
+# -1 if $1 < $2
+# 0  if $1 = $2
+# 1  if $1 > $2
 function vercomp () {
-    # http://stackoverflow.com/questions/4023830
-    # 0: '='
-    # 1: '>'
-    # 2: '<'
-    if [[ $1 == $2 ]]
-    then
-        echo 0
-    fi
-    local IFS=.
-    local i ver1=($1) ver2=($2)
-    # fill empty fields in ver1 with zeros
-    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
-    do
-        ver1[i]=0
-    done
-    for ((i=0; i<${#ver1[@]}; i++))
-    do
-        if [[ -z ${ver2[i]} ]]
-        then
-            # fill empty fields in ver2 with zeros
-            ver2[i]=0
-        fi
-        if ((10#${ver1[i]} > 10#${ver2[i]}))
-        then
-            echo 1
-        fi
-        if ((10#${ver1[i]} < 10#${ver2[i]}))
-        then
-            echo 2
+    typeset    n diff IFS='.'
+    typeset -a v1=($1) v2=($2)
+    
+    for (( n=0 ; n<4 ; n+=1 )) ; do
+        diff=$((v1[n]-v2[n]))
+        if [ $diff -ne 0 ] ; then
+            [ $diff -le 0 ] && echo '-1' || echo '1'
+            return
         fi
     done
-#    echo 0
+    echo '0'
 }
 
-
-rtn=$(vercomp ${version} 1.2)
 # URL to download from
-if [ "$rtn" == "1" ]
-then
-    download="http://golang.org/dl/go${version}.${platform}-${arch}${extra}.tar.gz"
+if [ $(vercomp ${version} 1.2) = "1" ] ; then
+    download="https://storage.googleapis.com/golang/go${version}.${platform}-${arch}${extra}.tar.gz"
 else
     download="https://go.googlecode.com/files/go${version}.${platform}-${arch}${extra}.tar.gz"
 fi
+[ $version = '1' ] && download="https://go.googlecode.com/files/go.go${version}.${platform}-${arch}${extra}.tar.gz"
+
 # Can't get too clever here
 set +e
 
