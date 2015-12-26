@@ -41,10 +41,11 @@ if [ "$platform" = "darwin" ]; then
       extra="-osx10.6"
     fi
   fi
+  # 1.4.3 later extra none
+  if [ "$version" \> "1.4.2" ]; then
+      extra=""
+  fi
 fi
-
-
-
 
 function vercomp () {
     # http://stackoverflow.com/questions/4023830
@@ -88,8 +89,9 @@ if [ "$rtn" == "1" ]
 then
     download="http://golang.org/dl/go${version}.${platform}-${arch}${extra}.tar.gz"
 else
-    download="https://go.googlecode.com/files/go${version}.${platform}-${arch}${extra}.tar.gz"
+    download="https://storage.googleapis.com/golang/go${version}.${platform}-${arch}${extra}.tar.gz"
 fi
+
 # Can't get too clever here
 set +e
 
