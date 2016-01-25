@@ -75,6 +75,7 @@ fi
 
 # URL to download from
 download=$(download_url $version $platform $arch $extra)
+echo "Downloading: $download"
 
 # Can't get too clever here
 set +e
