@@ -20,10 +20,10 @@ function download_url() {
     local arch="$3"
     local extra="$4"
 
-    # newer versions are at http://golang.org/dl
+    # newer versions are at http://storage.googleapis.com/golang
     # older versions are at http://go.googlecode.com/files
 
-    local base_url_new="http://golang.org/dl"
+    local base_url_new="https://storage.googleapis.com/golang"
     local base_url_old="http://go.googlecode.com/files"
 
     download="${base_url_new}/go${version}.${platform}-${arch}${extra}.tar.gz"
