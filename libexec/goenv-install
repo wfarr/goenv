@@ -34,17 +34,17 @@ fi
 
 if [ "$platform" = "darwin" ]; then
   # Since go version 1.2, osx packages were subdivided into 10.6 and 10.8
-  if [ "$version" = "1.2" -o "$version" \> "1.2" ]; then
+  # After version 1.4.2, the OS version postfix was dropped
+  if [ "$version" \> "1.4.2" ]; then
+    extra=""
+  elif [ "$version" = "1.2" -o "$version" \> "1.2" -o  "$version" \< "1.4.3" ]; then
     if [ "$(uname -r)" \> "12" ]; then
-      extra="-osx10.8"
+      extra="-osx10.6"
     else
       extra="-osx10.6"
     fi
   fi
 fi
-
-
-
 
 function vercomp () {
     # http://stackoverflow.com/questions/4023830
