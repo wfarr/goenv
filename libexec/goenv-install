@@ -33,7 +33,7 @@ else
 fi
 
 if [ "$platform" = "darwin" ]; then
-  # Since go version 1.2, osx packages were subdivided into 10.6 and 10.8
+  # Since go version 1.2, macOS packages were subdivided into 10.6 and 10.8
   # After version 1.4.2, the OS version postfix was dropped
   if [ "$version" \> "1.4.2" ]; then
     extra=""
